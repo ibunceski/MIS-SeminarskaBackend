@@ -1,0 +1,16 @@
+beautifulsoup4
+category_encoders
+fastapi
+joblib
+matplotlib
+numpy
+pandas
+psycopg2-binary
+Requests
+scikit_learn
+ta
+tensorflow
+tensorflow_intel
+transformers
+uvicorn
+tf-keras

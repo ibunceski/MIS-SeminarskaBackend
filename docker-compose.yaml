@@ -1,0 +1,77 @@
+services:
+  spring-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dians-hw-backend
+    depends_on:
+      analyzer:
+        condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      - DB_URL=jdbc:postgresql://dians-hw-db:5432/diansdb
+      - DB_USERNAME=dians
+      - DB_PASSWORD=dians123
+      - SCRAPER_URL=http://dians-hw-scraper:8000
+      - ANALYZER_URL=http://dians-hw-analyzer:8001
+    ports:
+      - "8080:8080"
+
+  analyzer:
+    build:
+      context: ./analyzer/StockAnalyzer
+      dockerfile: Dockerfile
+
+    container_name: dians-hw-analyzer
+    networks:
+      - app-network
+    volumes:
+      - ./analyzer/StockAnalyzer/models:/app/models
+    depends_on:
+      - db
+      - scraper
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_URL=postgresql://dians:dians123@dians-hw-db:5432/diansdb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 35
+      start_period: 10s
+
+  scraper:
+    build:
+      context: ./scraper/StockScraper
+      dockerfile: Dockerfile
+
+    container_name: dians-hw-scraper
+    networks:
+      - app-network
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=postgresql://dians:dians123@dians-hw-db:5432/diansdb
+
+  db:
+    image: postgres
+    container_name: dians-hw-db
+    environment:
+      POSTGRES_DB: diansdb
+      POSTGRES_USER: dians
+      POSTGRES_PASSWORD: dians123
+    networks:
+      - app-network
+    ports:
+      - "9555:5432"
+    volumes:
+      - ./database/postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

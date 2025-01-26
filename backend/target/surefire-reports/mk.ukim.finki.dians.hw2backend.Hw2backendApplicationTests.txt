@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: mk.ukim.finki.dians.hw2backend.Hw2backendApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.519 s -- in mk.ukim.finki.dians.hw2backend.Hw2backendApplicationTests
